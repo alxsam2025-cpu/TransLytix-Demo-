@@ -45,21 +45,33 @@ export default function RoadHealthScores() {
   ];
 
   const [scores, setScores] = useState(initialScores);
+  const [reports, setReports] = useState([]);
 
   // 🔄 Live updates simulation
   useEffect(() => {
     const interval = setInterval(() => {
-      setScores((prevScores) =>
-        prevScores.map((item) => {
+      setScores((prevScores) => {
+        const updated = prevScores.map((item) => {
           let change = Math.floor(Math.random() * 7) - 3; // -3 to +3
-          let newHealth = Math.max(
-            30,
-            Math.min(95, item.healthIndex + change)
-          );
+          let newHealth = Math.max(30, Math.min(95, item.healthIndex + change));
           return { ...item, healthIndex: newHealth };
-        })
-      );
+        });
+
+        // Pick a random country to log a new "citizen report"
+        const randomCountry =
+          updated[Math.floor(Math.random() * updated.length)];
+        setReports((prev) => [
+          {
+            time: new Date().toLocaleTimeString(),
+            message: `New citizen report received from ${randomCountry.country}. Health Index now ${randomCountry.healthIndex}.`,
+          },
+          ...prev.slice(0, 4), // keep only latest 5 reports
+        ]);
+
+        return updated;
+      });
     }, 5000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -70,8 +82,7 @@ export default function RoadHealthScores() {
       </h2>
       <p className="text-gray-600 mb-5 text-sm sm:text-base">
         Explore how road conditions impact citizens’ safety and economic
-        growth. The chart below updates in real-time to reflect rolling
-        reports.
+        growth. The chart updates in real-time as new reports arrive.
       </p>
 
       {/* 📊 Chart Section */}
@@ -79,7 +90,6 @@ export default function RoadHealthScores() {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={scores}>
             <CartesianGrid strokeDasharray="3 3" />
-            {/* ✅ interval={0} forces all country names to display */}
             <XAxis dataKey="country" tick={{ fontSize: 12 }} interval={0} />
             <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
             <Tooltip
@@ -99,7 +109,7 @@ export default function RoadHealthScores() {
       </div>
 
       {/* 📋 Table Section */}
-      <div className="overflow-x-auto rounded-lg shadow-md">
+      <div className="overflow-x-auto rounded-lg shadow-md mb-6">
         <table className="w-full text-sm sm:text-base">
           <thead>
             <tr className="bg-gray-800 text-white">
@@ -150,7 +160,7 @@ export default function RoadHealthScores() {
       </div>
 
       {/* ✅ Mobile-only Impact Cards */}
-      <div className="sm:hidden mt-4 space-y-3">
+      <div className="sm:hidden mt-4 space-y-3 mb-6">
         {scores.map((item, i) => (
           <div
             key={i}
@@ -175,6 +185,24 @@ export default function RoadHealthScores() {
             <p className="text-xs">💼 {item.economicImpact}</p>
           </div>
         ))}
+      </div>
+
+      {/* 📰 Live Reports Feed */}
+      <div className="bg-gray-100 p-4 rounded-lg shadow-inner">
+        <h3 className="font-bold mb-2">📢 Latest Citizen Reports</h3>
+        {reports.length === 0 ? (
+          <p className="text-gray-500 text-sm">
+            Waiting for first report...
+          </p>
+        ) : (
+          <ul className="space-y-2 text-sm">
+            {reports.map((r, idx) => (
+              <li key={idx} className="border-b pb-1">
+                <span className="text-gray-500">[{r.time}]</span> {r.message}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
