@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart2,
@@ -24,7 +24,15 @@ import Support from "./sections/Support";
 
 export default function App() {
   const [activeSection, setActiveSection] = useState("ourSolution");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+
+  // Track window size for sidebar responsiveness
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const menuItems = [
     { id: "ourSolution", label: "Our Solution", icon: Lightbulb },
@@ -38,87 +46,92 @@ export default function App() {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-100 relative">
+    <div className="flex min-h-screen bg-gray-100 relative overflow-hidden">
       {/* Mobile toggle button */}
-      <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="absolute top-4 left-4 z-50 p-2 bg-green-700 text-white rounded-lg shadow-lg md:hidden"
-      >
-        {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-      </button>
+      {!isDesktop && (
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="fixed top-4 left-4 z-50 p-2 bg-green-700 text-white rounded-lg shadow-md"
+        >
+          {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      )}
 
-      {/* Sidebar */}
+      {/* Sidebar with animations */}
       <AnimatePresence>
-        {sidebarOpen && (
+        {(sidebarOpen || isDesktop) && (
           <motion.div
             key="sidebar"
-            initial={{ x: -250 }}
+            initial={{ x: -260 }}
             animate={{ x: 0 }}
-            exit={{ x: -250 }}
+            exit={{ x: -260 }}
             transition={{ type: "spring", stiffness: 80, damping: 20 }}
-            className="fixed md:static top-0 left-0 h-full w-72 
-                       bg-gradient-to-b from-green-900 via-brown-700 to-black 
-                       text-white shadow-2xl flex flex-col z-40 relative"
+            className={`fixed md:static top-0 left-0 h-full w-64 
+                       bg-gradient-to-b from-green-900 via-green-800 to-black 
+                       text-white shadow-2xl flex flex-col z-40`}
           >
             {/* Logo */}
-            <div className="px-6 py-6 border-b border-green-600 flex items-center justify-between relative z-10">
-              <h1 className="text-3xl font-extrabold tracking-wide">
+            <div className="px-5 py-5 border-b border-green-700 flex items-center justify-between">
+              <h1 className="text-2xl font-extrabold tracking-wide">
                 <span className="text-green-300">Trans</span>
-                <span className="text-brown-200">Lytix</span>
+                <span className="text-gray-300">Lytix</span>
               </h1>
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="md:hidden p-1 rounded-lg hover:bg-green-800"
-              >
-                <X className="w-5 h-5 text-white" />
-              </button>
+              {!isDesktop && (
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-1 rounded-lg hover:bg-green-800"
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              )}
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-4 py-6 space-y-3 overflow-y-auto relative z-10">
+            <nav className="flex-1 px-3 py-5 space-y-2 overflow-y-auto">
               {menuItems.map(({ id, label, icon: Icon }) => (
                 <motion.button
                   key={id}
                   onClick={() => {
                     setActiveSection(id);
-                    if (window.innerWidth < 768) setSidebarOpen(false);
+                    if (!isDesktop) setSidebarOpen(false);
                   }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`flex items-center space-x-3 w-full px-4 py-3 rounded-xl transition-all duration-300 shadow-md ${
-                    activeSection === id
-                      ? "bg-green-500 text-black font-semibold shadow-lg ring-2 ring-white ring-opacity-60"
-                      : "hover:bg-green-800"
-                  }`}
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  className={`flex items-center space-x-3 w-full px-3 py-2 rounded-lg transition-all duration-300 text-sm sm:text-base 
+                    ${
+                      activeSection === id
+                        ? "bg-green-500 text-black font-semibold shadow-md ring-1 ring-white"
+                        : "hover:bg-green-800"
+                    }`}
                 >
-                  <motion.div
-                    animate={
-                      activeSection === id ? { rotate: [0, 360] } : { rotate: 0 }
-                    }
-                    transition={{ duration: 0.6 }}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </motion.div>
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>{label}</span>
                 </motion.button>
               ))}
             </nav>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-green-600 text-sm text-green-200 relative z-10">
+            <div className="px-5 py-4 border-t border-green-700 text-xs sm:text-sm text-green-200">
               © 2025 TransLytix
             </div>
-
-            {/* Vertical Divider - static glowing effect */}
-            <div className="hidden md:block absolute top-0 right-0 h-full w-1 
-                            bg-gradient-to-b from-green-400 via-brown-500 to-black" />
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* Overlay when sidebar is open on mobile */}
+      {sidebarOpen && !isDesktop && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Main Content */}
-      <div className="flex-1 p-6 overflow-y-auto flex items-center justify-center md:pl-72">
-        <div className="w-full max-w-6xl mx-auto px-6">
+      <div
+        className={`flex-1 p-3 sm:p-5 md:p-8 overflow-y-auto transition-all duration-300 
+          ${isDesktop ? "md:ml-64" : ""}`}
+      >
+        <div className="w-full max-w-5xl mx-auto">
           <AnimatePresence mode="wait">
             {[
               { id: "ourSolution", Component: OurSolution },
@@ -134,16 +147,13 @@ export default function App() {
                 activeSection === id && (
                   <motion.div
                     key={id}
-                    initial={{ opacity: 0, y: 25 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -25 }}
-                    transition={{ duration: 0.5 }}
-                    className="bg-white rounded-2xl shadow-xl p-10 relative
-                               border-4 border-transparent 
-                               bg-clip-padding 
-                               before:absolute before:inset-0 before:rounded-2xl before:p-[2px] 
-                               before:bg-gradient-to-r before:from-green-600 before:via-brown-600 before:to-black 
-                               before:opacity-60 before:blur-md before:-z-10"
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.4 }}
+                    className="bg-white rounded-xl sm:rounded-2xl shadow-md sm:shadow-lg 
+                               p-4 sm:p-6 md:p-8 relative text-sm sm:text-base md:text-lg leading-relaxed
+                               border border-gray-200"
                   >
                     <Component />
                   </motion.div>
@@ -155,6 +165,3 @@ export default function App() {
     </div>
   );
 }
-
-
-
