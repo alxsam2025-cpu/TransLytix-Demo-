@@ -57,7 +57,7 @@ export default function App() {
         </button>
       )}
 
-      {/* Sidebar with animations */}
+      {/* Sidebar */}
       <AnimatePresence>
         {(sidebarOpen || isDesktop) && (
           <motion.div
@@ -68,7 +68,7 @@ export default function App() {
             transition={{ type: "spring", stiffness: 80, damping: 20 }}
             className={`fixed md:static top-0 left-0 h-full w-64 
                        bg-gradient-to-b from-green-900 via-green-800 to-black 
-                       text-white shadow-2xl flex flex-col z-40`}
+                       text-white shadow-2xl flex flex-col z-50`}
           >
             {/* Logo */}
             <div className="px-5 py-5 border-b border-green-700 flex items-center justify-between">
@@ -121,7 +121,7 @@ export default function App() {
       {/* Overlay when sidebar is open on mobile */}
       {sidebarOpen && !isDesktop && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30"
+          className="fixed inset-0 bg-black bg-opacity-40 z-40"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -129,7 +129,7 @@ export default function App() {
       {/* Main Content */}
       <div
         className={`flex-1 p-3 sm:p-5 md:p-8 overflow-y-auto transition-all duration-300 
-          ${isDesktop ? "md:ml-64" : ""}`}
+          ${isDesktop ? "md:ml-64" : ""} relative z-0`}
       >
         <div className="w-full max-w-5xl mx-auto">
           <AnimatePresence mode="wait">
@@ -151,9 +151,11 @@ export default function App() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.4 }}
-                    className="bg-white rounded-xl sm:rounded-2xl shadow-md sm:shadow-lg 
+                    className={`bg-white rounded-xl sm:rounded-2xl shadow-md sm:shadow-lg 
                                p-4 sm:p-6 md:p-8 relative text-sm sm:text-base md:text-lg leading-relaxed
-                               border border-gray-200"
+                               border border-gray-200 ${
+                                 id === "mapView" ? "h-[75vh]" : ""
+                               }`}
                   >
                     <Component />
                   </motion.div>

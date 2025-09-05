@@ -8,6 +8,9 @@ import {
   Tooltip,
   CartesianGrid,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import { COUNTRIES, COUNTRY_META } from "../utils/liveData";
 
@@ -74,9 +77,7 @@ export default function PredictiveAnalysis() {
     });
     return Object.keys(map).map((k) => {
       const m = map[k];
-      const val = m.n
-        ? Math.round((1 - m.sum / m.n) * 100)
-        : 80;
+      const val = m.n ? Math.round((1 - m.sum / m.n) * 100) : 80;
       return {
         country: k,
         health: val,
@@ -84,6 +85,14 @@ export default function PredictiveAnalysis() {
       };
     });
   }, [stream]);
+
+  // Severity distribution for donut chart
+  const severityData = [
+    { name: "Critical", value: kpi.critical, color: "#dc2626" },
+    { name: "In Progress", value: kpi.inProgress, color: "#2563eb" },
+    { name: "Alerts", value: kpi.alerts, color: "#9333ea" },
+    { name: "Resolved", value: kpi.total - (kpi.critical + kpi.inProgress + kpi.alerts), color: "#16a34a" },
+  ];
 
   return (
     <div className="max-w-5xl mx-auto space-y-4 p-4">
@@ -133,8 +142,8 @@ export default function PredictiveAnalysis() {
         </div>
       </div>
 
-      {/* Trend + Per-country */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Trend + Per-country + Donut */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-3 rounded shadow">
           <h4 className="font-semibold mb-2 text-sm sm:text-base">
             Reports Trend
@@ -189,6 +198,45 @@ export default function PredictiveAnalysis() {
                 >
                   {p.health}
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white p-3 rounded shadow">
+          <h4 className="font-semibold mb-2 text-sm sm:text-base">
+            Severity Distribution
+          </h4>
+          <div className="h-40 sm:h-52 flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={severityData}
+                  innerRadius={30}
+                  outerRadius={60}
+                  paddingAngle={4}
+                  dataKey="value"
+                >
+                  {severityData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex flex-wrap justify-center gap-2 mt-2 text-xs sm:text-sm">
+            {severityData.map((s) => (
+              <div key={s.name} className="flex items-center gap-1">
+                <span
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    background: s.color,
+                  }}
+                />
+                {s.name}
               </div>
             ))}
           </div>
