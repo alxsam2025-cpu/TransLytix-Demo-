@@ -37,33 +37,25 @@ export default function RoadHealth() {
     return subscribe((buf) => {
       setStream(buf);
       // pick last 5 reports for ticker
-      setLatestReports((prev) => {
-        const updated = [...buf.slice(-5)];
-        return updated;
-      });
+      setLatestReports([...buf.slice(-5)]);
     });
   }, []);
 
   // compute rolling health per country
   const snapshot = useMemo(() => {
     const map = {};
-    COUNTRIES.forEach(
-      (c) => (map[c] = { country: c, sum: 0, count: 0 })
-    );
+    // Ensure ALL 5 countries always exist
+    COUNTRIES.forEach((c) => {
+      map[c] = { country: c, sum: 0, count: 0 };
+    });
 
     stream.forEach((r) => {
-      map[r.country] = map[r.country] || {
-        country: r.country,
-        sum: 0,
-        count: 0,
-      };
       map[r.country].sum += r.intensity || 0.45;
       map[r.country].count += 1;
     });
 
     return Object.values(map).map((m) => {
       const avgIntensity = m.count ? m.sum / m.count : 0.35;
-      // healthIndex: 0-100 (higher = healthier)
       const healthIndex = Math.max(
         0,
         Math.min(100, Math.round((1 - avgIntensity) * 100))
@@ -104,11 +96,7 @@ export default function RoadHealth() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis domain={[0, 100]} />
-              <Tooltip
-                content={
-                  <CustomTooltip snapshot={snapshot} />
-                }
-              />
+              <Tooltip content={<CustomTooltip snapshot={snapshot} />} />
               <Bar
                 dataKey="health"
                 animationDuration={800}
