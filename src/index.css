@@ -1,9 +1,40 @@
+/* ✅ index.css */
+
+/* Leaflet styles must be imported first */
+@import "leaflet/dist/leaflet.css";
+
+/* Tailwind base imports */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --brand: #6366f1;
+/* Custom global styles */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb;
+  color: #111827;
 }
 
-.leaflet-container { height: 320px; width: 100%; border-radius: 1rem; }
+.sidebar {
+  background-color: #1f2937; /* dark gray */
+  color: #ffffff;
+}
+
+.sidebar button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  transition: background 0.2s ease;
+}
+
+.sidebar button:hover {
+  background-color: #374151;
+}
+
+
+
+

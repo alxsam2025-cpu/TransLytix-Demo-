@@ -1,26 +1,26 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./index.html",   // root index.html
+    "./src/**/*.{js,ts,jsx,tsx}", // all React components
+  ],
   theme: {
     extend: {
       colors: {
         brand: {
-          50:  "#eef2ff",
-          100: "#e0e7ff",
-          200: "#c7d2fe",
-          300: "#a5b4fc",
-          400: "#818cf8",
-          500: "#6366f1",
-          600: "#4f46e5",
-          700: "#4338ca",
-          800: "#3730a3",
-          900: "#312e81"
-        }
+          DEFAULT: "#2563eb", // blue-600
+          light: "#3b82f6",   // blue-500
+          dark: "#1e40af",    // blue-900
+        },
+        sidebar: {
+          bg: "#1f2937", // gray-800
+          hover: "#374151", // gray-700
+        },
       },
-      borderRadius: {
-        '2xl': '1.25rem'
-      }
-    }
+      fontFamily: {
+        sans: ["Inter", "ui-sans-serif", "system-ui"],
+      },
+    },
   },
-  plugins: []
-}
+  plugins: [],
+};
