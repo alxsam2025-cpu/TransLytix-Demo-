@@ -11,6 +11,9 @@ import {
   PieChart,
   Pie,
   Cell,
+  BarChart,
+  Bar,
+  Legend,
 } from "recharts";
 import { COUNTRIES, COUNTRY_META } from "../utils/liveData";
 
@@ -67,6 +70,20 @@ export default function PredictiveAnalysis() {
 
   const latest = stream.slice(0, 6);
 
+  // Reports per country (for Bar Graph)
+  const reportsByCountry = useMemo(() => {
+    const map = {};
+    COUNTRIES.forEach((c) => (map[c] = 0));
+    stream.forEach((r) => {
+      map[r.country] = (map[r.country] || 0) + 1;
+    });
+    return Object.keys(map).map((c) => ({
+      country: c,
+      reports: map[c],
+      color: COUNTRY_META[c]?.color || "#666",
+    }));
+  }, [stream]);
+
   const perCountry = useMemo(() => {
     const map = {};
     COUNTRIES.forEach((c) => (map[c] = { sum: 0, n: 0 }));
@@ -91,7 +108,11 @@ export default function PredictiveAnalysis() {
     { name: "Critical", value: kpi.critical, color: "#dc2626" },
     { name: "In Progress", value: kpi.inProgress, color: "#2563eb" },
     { name: "Alerts", value: kpi.alerts, color: "#9333ea" },
-    { name: "Resolved", value: kpi.total - (kpi.critical + kpi.inProgress + kpi.alerts), color: "#16a34a" },
+    {
+      name: "Resolved",
+      value: kpi.total - (kpi.critical + kpi.inProgress + kpi.alerts),
+      color: "#16a34a",
+    },
   ];
 
   return (
@@ -240,6 +261,29 @@ export default function PredictiveAnalysis() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* NEW Bar Graph for Reports per Country */}
+      <div className="bg-white p-3 rounded shadow">
+        <h4 className="font-semibold mb-2 text-sm sm:text-base">
+          Reports by Country (Live)
+        </h4>
+        <div className="h-56">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={reportsByCountry}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="country" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="reports" fill="#2563eb">
+                {reportsByCountry.map((entry, index) => (
+                  <Cell key={`bar-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
