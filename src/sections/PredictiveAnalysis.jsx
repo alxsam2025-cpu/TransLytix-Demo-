@@ -267,7 +267,7 @@ export default function PredictiveAnalysis() {
       {/* NEW Bar Graph for Reports per Country */}
       <div className="bg-white p-3 rounded shadow">
         <h4 className="font-semibold mb-2 text-sm sm:text-base">
-          Reports by Country (Live)
+          📊 Reports by Country (Live)
         </h4>
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
@@ -277,7 +277,7 @@ export default function PredictiveAnalysis() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="reports" fill="#2563eb">
+              <Bar dataKey="reports" radius={[6, 6, 0, 0]}>
                 {reportsByCountry.map((entry, index) => (
                   <Cell key={`bar-${index}`} fill={entry.color} />
                 ))}
