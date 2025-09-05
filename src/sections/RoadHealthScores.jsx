@@ -79,7 +79,8 @@ export default function RoadHealthScores() {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={scores}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="country" tick={{ fontSize: 12 }} />
+            {/* ✅ interval={0} forces all country names to display */}
+            <XAxis dataKey="country" tick={{ fontSize: 12 }} interval={0} />
             <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
             <Tooltip
               contentStyle={{
@@ -170,9 +171,7 @@ export default function RoadHealthScores() {
                 {item.healthIndex}
               </span>
             </p>
-            <p className="text-xs mt-1">
-              👥 {item.citizenImpact}
-            </p>
+            <p className="text-xs mt-1">👥 {item.citizenImpact}</p>
             <p className="text-xs">💼 {item.economicImpact}</p>
           </div>
         ))}

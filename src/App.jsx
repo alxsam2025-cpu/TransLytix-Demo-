@@ -11,6 +11,7 @@ import {
   Menu,
   X,
   Lightbulb,
+  Users,
 } from "lucide-react";
 
 import OurSolution from "./sections/OurSolution";
@@ -21,6 +22,7 @@ import Reports from "./sections/Reports";
 import ReportForm from "./sections/ReportForm";
 import PredictiveAnalysis from "./sections/PredictiveAnalysis";
 import Support from "./sections/Support";
+import TeamSection from "./sections/TeamSection";
 
 export default function App() {
   const [activeSection, setActiveSection] = useState("ourSolution");
@@ -34,6 +36,13 @@ export default function App() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Automatically hide MapView on mobile when sidebar opens
+  useEffect(() => {
+    if (!isDesktop && sidebarOpen && activeSection === "mapView") {
+      setActiveSection(""); // temporarily hide MapView
+    }
+  }, [sidebarOpen, isDesktop, activeSection]);
+
   const menuItems = [
     { id: "ourSolution", label: "Our Solution", icon: Lightbulb },
     { id: "liveDemo", label: "Live Demo", icon: BarChart2 },
@@ -42,6 +51,7 @@ export default function App() {
     { id: "reports", label: "Damage Reports", icon: FileText },
     { id: "reportForm", label: "Report Damage", icon: Edit3 },
     { id: "predictive", label: "Predictive Analysis", icon: TrendingUp },
+    { id: "team", label: "Our Team", icon: Users },
     { id: "support", label: "Support", icon: HelpCircle },
   ];
 
@@ -141,6 +151,7 @@ export default function App() {
               { id: "reports", Component: Reports },
               { id: "reportForm", Component: ReportForm },
               { id: "predictive", Component: PredictiveAnalysis },
+              { id: "team", Component: TeamSection },
               { id: "support", Component: Support },
             ].map(
               ({ id, Component }) =>
@@ -153,9 +164,7 @@ export default function App() {
                     transition={{ duration: 0.4 }}
                     className={`bg-white rounded-xl sm:rounded-2xl shadow-md sm:shadow-lg 
                                p-4 sm:p-6 md:p-8 relative text-sm sm:text-base md:text-lg leading-relaxed
-                               border border-gray-200 ${
-                                 id === "mapView" ? "h-[75vh]" : ""
-                               }`}
+                               border border-gray-200 ${id === "mapView" ? "h-[75vh]" : ""}`}
                   >
                     <Component />
                   </motion.div>

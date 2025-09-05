@@ -17,8 +17,12 @@ export default function Sidebar({ activeSection, setActiveSection }) {
   return (
     <div>
       {/* Mobile top bar with hamburger */}
-      <div className="md:hidden flex items-center justify-between bg-gray-900 text-white p-4 shadow-md">
-        <h1 className="text-lg font-bold sm:text-xl">🚦 TransLytix</h1>
+      <div className="md:hidden flex items-center justify-between bg-gradient-to-r from-green-800 via-green-700 to-green-900 text-white p-4 shadow-md">
+        <img
+          src="/logo.png"
+          alt="TransLytix Logo"
+          className="w-28 h-auto object-contain"
+        />
         <button onClick={() => setOpen(true)} aria-label="Open menu">
           <Menu size={28} />
         </button>
@@ -26,16 +30,20 @@ export default function Sidebar({ activeSection, setActiveSection }) {
 
       {/* Sidebar for desktop + sliding drawer for mobile */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-gray-900 text-white p-6 space-y-6 transform transition-transform duration-300 ease-in-out z-50
+        className={`fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-green-900 via-green-800 to-black text-white p-6 space-y-6 transform transition-transform duration-300 ease-in-out z-50
           ${open ? "translate-x-0" : "-translate-x-full"} 
           md:translate-x-0 md:relative md:block`}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between md:block">
-          <h1 className="text-xl md:text-2xl font-bold mb-8">🚦 TransLytix</h1>
+        {/* Header with logo */}
+        <div className="flex items-center justify-between md:block mb-8">
+          <img
+            src="/logo.png"
+            alt="TransLytix Logo"
+            className="w-36 md:w-40 h-auto object-contain mx-auto"
+          />
           {/* Close button (mobile only) */}
           <button
-            className="md:hidden text-gray-400 hover:text-white"
+            className="md:hidden text-gray-400 hover:text-white absolute top-6 right-6"
             onClick={() => setOpen(false)}
             aria-label="Close menu"
           >
@@ -52,23 +60,28 @@ export default function Sidebar({ activeSection, setActiveSection }) {
                 setActiveSection(item.id);
                 setOpen(false); // close sidebar on mobile click
               }}
-              className={`cursor-pointer px-3 py-2 rounded-lg text-sm sm:text-base transition-colors
+              className={`cursor-pointer px-4 py-2 rounded-lg text-sm sm:text-base transition-all duration-300
                 ${
                   activeSection === item.id
-                    ? "bg-green-600 text-white font-semibold"
-                    : "hover:bg-gray-700"
+                    ? "bg-green-500 text-black font-semibold shadow-md"
+                    : "hover:bg-green-700 hover:text-white"
                 }`}
             >
               {item.label}
             </li>
           ))}
         </ul>
+
+        {/* Footer */}
+        <div className="mt-auto text-center text-green-200 text-xs sm:text-sm">
+          © 2025 TransLytix
+        </div>
       </div>
 
       {/* Background overlay when sidebar is open on mobile */}
       {open && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
           onClick={() => setOpen(false)}
         />
       )}
