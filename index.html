@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/logo.png" />
-    <title>TransLytix • Road Health & Citizen Reports</title>
+    <title>ROAD PULSE GHANA • Road Health & Citizen Reports</title>
 
     <!-- ✅ Prevent aggressive browser caching -->
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
@@ -15,12 +15,6 @@
     <div id="root"></div>
 
     <!-- ✅ Add cache-busting query param -->
-    <script type="module">
-      const version = Date.now(); // unique per deployment
-      const script = document.createElement("script");
-      script.type = "module";
-      script.src = `/src/main.jsx?v=${version}`;
-      document.body.appendChild(script);
-    </script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

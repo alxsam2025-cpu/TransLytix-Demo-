@@ -1,5 +1,4 @@
 {
-  "name": "ghana-translytix",
   "version": 2,
   "framework": "vite",
   "buildCommand": "npm run build",
@@ -10,18 +9,10 @@
       "NODE_VERSION": "22"
     }
   },
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "headers": [
+  "rewrites": [
     {
       "source": "/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=3600" }
-      ]
+      "destination": "/index.html"
     }
   ]
 }

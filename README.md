@@ -1,4 +1,4 @@
-# TransLytix Ghana — Road Health & Citizen Reports
+# ROAD PULSE GHANA — Road Health & Citizen Reports
 
 A comprehensive React + Vite dashboard specifically designed for Ghana's road infrastructure monitoring:
 - 🇬🇭 **Ghana-focused**: All 10 regions with 275+ constituencies

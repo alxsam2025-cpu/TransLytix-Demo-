@@ -34,8 +34,8 @@ export default function App() {
           >
             <div className="px-6 py-6 border-b border-green-600 flex items-center justify-between">
               <h1 className="text-3xl font-extrabold tracking-wide">
-                <span className="text-green-300">Trans</span>
-                <span className="text-brown-200">Lytix</span>
+                <span className="text-green-300">ROAD PULSE</span>
+                <span className="text-brown-200"> GHANA</span>
               </h1>
               <button
                 onClick={() => setSidebarOpen(false)}

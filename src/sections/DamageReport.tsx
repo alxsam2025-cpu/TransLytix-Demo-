@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
-import { Download, Search, Filter } from 'lucide-react'
+import { useMemo, useRef, useState } from 'react'
+import { Download, Search, Filter, Trophy, ArrowUpRight, TrendingUp } from 'lucide-react'
 import { useDataStore } from '../store/useDataStore'
-import { GHANA_REGIONS, getAllConstituencies, getTotalRepairCosts } from '../data/sample'
+import { GHANA_REGIONS, getAllConstituencies } from '../data/sample'
 
 export default function DamageReport(){
   const reports = useDataStore(s=>s.reports)
@@ -17,16 +17,45 @@ export default function DamageReport(){
     ? getAllConstituencies()
     : GHANA_REGIONS[selectedRegion as keyof typeof GHANA_REGIONS].constituencies
 
+  const reportsSectionRef = useRef<HTMLDivElement>(null)
+
   const filteredReports = useMemo(() => {
-    return reports.filter(r => {
+    let filtered = reports.filter(r => {
       if (selectedRegion !== 'All' && r.region !== selectedRegion) return false
       if (selectedConstituency !== 'All' && r.constituency !== selectedConstituency) return false
       if (selectedSeverity !== 'All' && r.severity !== selectedSeverity) return false
       if (selectedStatus !== 'All' && r.status !== selectedStatus) return false
       if (searchTerm && !r.constituency.toLowerCase().includes(searchTerm.toLowerCase())) return false
       return true
-    }).sort((a, b) => b.timestamp - a.timestamp)
-  }, [reports, searchTerm, selectedRegion, selectedConstituency, selectedSeverity, selectedStatus])
+    })
+    
+    // Tab-based additional filtering
+    if (activeTab === 'regional') {
+      // Group by regional capitals - only show one report per capital
+      const capitalGroups = new Map()
+      filtered.forEach(r => {
+        const capital = GHANA_REGIONS[r.region as keyof typeof GHANA_REGIONS]?.capital
+        if (capital && (!capitalGroups.has(capital) || capitalGroups.get(capital).timestamp < r.timestamp)) {
+          capitalGroups.set(capital, r)
+        }
+      })
+      filtered = Array.from(capitalGroups.values())
+    }
+    
+    return filtered.sort((a, b) => b.timestamp - a.timestamp)
+  }, [reports, searchTerm, selectedRegion, selectedConstituency, selectedSeverity, selectedStatus, activeTab])
+
+  // League table stats by region
+  const leagueByRegion = useMemo(() => {
+    return regions.map(region => {
+      const items = reports.filter(r => r.region === region)
+      const total = items.length
+      const criticalHigh = items.filter(r => r.severity === 'Critical' || r.severity === 'High').length
+      const totalCost = items.reduce((sum, r) => sum + (r.estimatedCost || 0), 0)
+      const avgCost = total > 0 ? Math.round(totalCost / total) : 0
+      return { region, total, criticalHigh, totalCost, avgCost }
+    }).sort((a,b) => b.total - a.total)
+  }, [reports, regions])
 
   const summary = useMemo(() => {
     const totalCost = filteredReports.reduce((sum, r) => sum + (r.estimatedCost || 0), 0)
@@ -76,16 +105,16 @@ export default function DamageReport(){
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-green-50 border border-green-200 p-4 rounded-xl">
-        <h2 className="text-xl font-bold text-green-800 mb-2">🇬🇭 Ghana Road Damage Reports</h2>
+        <h2 className="text-xl font-bold text-green-800 mb-2">Ghana Road Damage Reports</h2>
         <p className="text-sm text-green-700">
           Comprehensive damage reports across all {Object.keys(GHANA_REGIONS).length} Ghana regions and 275+ constituencies.
         </p>
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+      <div className="flex flex-wrap items-center gap-2 bg-gray-100 p-1 rounded-lg">
         <button
-          onClick={() => setActiveTab('all')}
+          onClick={() => { setActiveTab('all'); setSelectedRegion('All'); setSelectedConstituency('All'); }}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             activeTab === 'all' 
               ? 'bg-white text-green-700 shadow' 
@@ -95,17 +124,17 @@ export default function DamageReport(){
           All Reports
         </button>
         <button
-          onClick={() => setActiveTab('regional')}
+          onClick={() => { setActiveTab('regional'); setSelectedConstituency('All'); }}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             activeTab === 'regional' 
               ? 'bg-white text-green-700 shadow' 
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
-          By Regional Capitals
+          By Regional Capital
         </button>
         <button
-          onClick={() => setActiveTab('constituency')}
+          onClick={() => { setActiveTab('constituency'); if (selectedRegion==='All') setSelectedRegion('Greater Accra') }}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             activeTab === 'constituency' 
               ? 'bg-white text-green-700 shadow' 
@@ -114,13 +143,15 @@ export default function DamageReport(){
         >
           By Constituency
         </button>
+        <div className="ml-auto hidden md:block text-xs text-gray-500 pr-2">Tabs update the totals below</div>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards (auto-update with filters) */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-blue-50 p-4 rounded-xl">
           <h3 className="font-semibold text-blue-800">Total Reports</h3>
           <div className="text-2xl font-bold text-blue-600">{filteredReports.length}</div>
+          <p className="text-xs text-blue-700">{selectedRegion==='All' ? 'All regions' : selectedRegion}</p>
         </div>
         <div className="bg-green-50 p-4 rounded-xl">
           <h3 className="font-semibold text-green-800">Total Cost</h3>
@@ -182,8 +213,137 @@ export default function DamageReport(){
         </div>
       </div>
 
+      {/* Road Damage League Table */}
+      <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl shadow-lg p-6 border border-yellow-200">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-bold flex items-center gap-3 text-gray-800">
+            <Trophy className="w-6 h-6 text-yellow-500" />
+            🏆 Road Damage League Table
+            <span className="text-sm font-normal text-gray-500">(By Region)</span>
+          </h3>
+          <div className="text-right">
+            <span className="text-xs text-gray-600 bg-white px-3 py-1 rounded-full shadow">Click region → View details</span>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white p-3 rounded-lg shadow">
+            <div className="text-sm text-gray-600">Top Region</div>
+            <div className="text-lg font-bold text-yellow-600">{leagueByRegion[0]?.region || 'N/A'}</div>
+            <div className="text-xs text-gray-500">{leagueByRegion[0]?.total || 0} reports</div>
+          </div>
+          <div className="bg-white p-3 rounded-lg shadow">
+            <div className="text-sm text-gray-600">Highest Cost</div>
+            <div className="text-lg font-bold text-red-600">GHS {leagueByRegion.reduce((max, r) => r.totalCost > max ? r.totalCost : max, 0).toLocaleString()}</div>
+          </div>
+          <div className="bg-white p-3 rounded-lg shadow">
+            <div className="text-sm text-gray-600">Most Critical</div>
+            <div className="text-lg font-bold text-orange-600">{leagueByRegion.reduce((max, r) => r.criticalHigh > max ? r.criticalHigh : max, 0)}</div>
+          </div>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm bg-white rounded-lg overflow-hidden shadow">
+            <thead>
+              <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-yellow-200">
+                <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                  <div className="flex items-center gap-1">
+                    <Trophy className="w-4 h-4 text-yellow-500" />
+                    Rank
+                  </div>
+                </th>
+                <th className="px-4 py-3 text-left font-semibold text-gray-700">Region</th>
+                <th className="px-4 py-3 text-right font-semibold text-gray-700">Health Score</th>
+                <th className="px-4 py-3 text-right font-semibold text-gray-700">Total Reports</th>
+                <th className="px-4 py-3 text-right font-semibold text-gray-700">Critical/High</th>
+                <th className="px-4 py-3 text-right font-semibold text-gray-700">Total Cost (GHS)</th>
+                <th className="px-4 py-3 text-right font-semibold text-gray-700">Avg Cost (GHS)</th>
+                <th className="px-4 py-3 text-center font-semibold text-gray-700">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leagueByRegion.map((row, idx) => {
+                const healthScore = Math.max(0, 100 - (row.criticalHigh / Math.max(row.total, 1)) * 100)
+                return (
+                  <tr
+                    key={row.region}
+                    className={`border-b transition-all duration-200 hover:bg-yellow-50 cursor-pointer group ${
+                      selectedRegion === row.region ? 'bg-yellow-100 border-yellow-300' : 'hover:shadow-md'
+                    }`}
+                    onClick={() => {
+                      setSelectedRegion(row.region)
+                      setActiveTab('regional')
+                      setSelectedConstituency('All')
+                      setTimeout(() => {
+                        reportsSectionRef.current?.scrollIntoView({ behavior: 'smooth' })
+                      }, 100)
+                    }}
+                  >
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                          idx === 0 ? 'bg-yellow-500 text-white' :
+                          idx === 1 ? 'bg-gray-400 text-white' :
+                          idx === 2 ? 'bg-yellow-600 text-white' :
+                          'bg-gray-200 text-gray-700'
+                        }`}>
+                          {idx + 1}
+                        </div>
+                        {idx === 0 && <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded font-medium">🏆 Leader</span>}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="font-semibold text-gray-800 group-hover:text-yellow-700 transition-colors">
+                        {row.region}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {GHANA_REGIONS[row.region as keyof typeof GHANA_REGIONS]?.capital}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        healthScore >= 80 ? 'bg-green-100 text-green-800' :
+                        healthScore >= 60 ? 'bg-yellow-100 text-yellow-800' :
+                        healthScore >= 40 ? 'bg-orange-100 text-orange-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {Math.round(healthScore)}/100
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right font-medium">{row.total}</td>
+                    <td className="px-4 py-3 text-right">
+                      <span className="text-red-600 font-medium">{row.criticalHigh}</span>
+                      {row.total > 0 && (
+                        <div className="text-xs text-gray-500">
+                          {Math.round((row.criticalHigh / row.total) * 100)}%
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right font-medium">{row.totalCost.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-right font-medium">{row.avgCost.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-center">
+                      <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-yellow-600 transition-colors mx-auto" />
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* Reports Table */}
-      <div className="bg-white rounded-xl shadow overflow-hidden">
+      <div className="bg-white rounded-xl shadow overflow-hidden" ref={reportsSectionRef}>
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-800">
+            {activeTab === 'all' && 'All Reports'}
+            {activeTab === 'regional' && `Reports by Regional Capital${selectedRegion !== 'All' ? ` - ${selectedRegion}` : 's'}`}
+            {activeTab === 'constituency' && `Reports by Constituency${selectedRegion !== 'All' ? ` in ${selectedRegion}` : ''}`}
+          </h3>
+          <p className="text-sm text-gray-600">
+            {filteredReports.length} report{filteredReports.length !== 1 ? 's' : ''} found
+          </p>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead className="bg-gray-50">

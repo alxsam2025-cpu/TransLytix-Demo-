@@ -93,7 +93,7 @@ export default function PredictiveAnalysis(){
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-green-50 border border-green-200 p-4 rounded-xl">
-        <h2 className="text-xl font-bold text-green-800 mb-2">🇬🇭 Ghana Predictive Analysis</h2>
+        <h2 className="text-xl font-bold text-green-800 mb-2">Ghana Predictive Analysis</h2>
         <p className="text-sm text-green-700">
           Live insights and health trends across Ghana's road network. Monitoring deterioration patterns and maintenance needs.
         </p>

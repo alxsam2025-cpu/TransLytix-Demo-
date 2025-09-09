@@ -5,6 +5,7 @@ type State = {
   reports: Report[]
   lastUpdate: number
   addRandomReport: () => void
+  addReport: (report: Report) => void
   getReportsByRegion: (region: string) => Report[]
   getReportsByConstituency: (constituency: string) => Report[]
   getTotalCostsByRegion: () => Record<string, number>
@@ -17,6 +18,9 @@ export const useDataStore = create<State>((set, get) => ({
     const one = makeInitialReports(1)[0]
     one.timestamp = Date.now()
     set({ reports: [one, ...get().reports].slice(0, 250), lastUpdate: Date.now() })
+  },
+  addReport: (report: Report) => {
+    set({ reports: [report, ...get().reports].slice(0, 250), lastUpdate: Date.now() })
   },
   getReportsByRegion: (region: string) => {
     return get().reports.filter(r => r.region === region)
