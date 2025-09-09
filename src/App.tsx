@@ -1,7 +1,21 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lightbulb, Menu, X } from "lucide-react";
+import { 
+  Lightbulb, 
+  Menu, 
+  X, 
+  Play, 
+  Map, 
+  BarChart3, 
+  FileText, 
+  TrendingUp 
+} from "lucide-react";
 import OurSolution from "./sections/OurSolution";
+import LiveDemo from "./sections/LiveDemo";
+import MapViewSection from "./sections/MapViewSection";
+import RoadHealthScore from "./sections/RoadHealthScore";
+import DamageReport from "./sections/DamageReport";
+import PredictiveAnalysis from "./sections/PredictiveAnalysis";
 
 export default function App() {
   const [activeSection, setActiveSection] = useState("ourSolution");
@@ -9,6 +23,11 @@ export default function App() {
 
   const menuItems = [
     { id: "ourSolution", label: "Our Solution", icon: Lightbulb },
+    { id: "liveDemo", label: "Live Demo", icon: Play },
+    { id: "mapView", label: "Map View", icon: Map },
+    { id: "roadHealthScore", label: "Road Health Score", icon: BarChart3 },
+    { id: "damageReport", label: "Damage Report", icon: FileText },
+    { id: "predictiveAnalysis", label: "Predictive Analysis", icon: TrendingUp },
   ];
 
   return (
@@ -71,8 +90,8 @@ export default function App() {
       </AnimatePresence>
 
       {/* Main Content */}
-      <div className="flex-1 p-6 overflow-y-auto flex items-center justify-center md:pl-72">
-        <div className="w-full max-w-6xl mx-auto px-6">
+      <div className="flex-1 p-3 md:p-6 overflow-y-auto flex items-center justify-center md:pl-0">
+        <div className="w-full max-w-6xl mx-auto px-2 md:px-6">
           <AnimatePresence mode="wait">
             {activeSection === "ourSolution" && (
               <motion.div
@@ -81,9 +100,69 @@ export default function App() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -25 }}
                 transition={{ duration: 0.5 }}
-                className="bg-white rounded-2xl shadow-xl p-10"
+                className="bg-white rounded-2xl shadow-xl p-6 md:p-10"
               >
                 <OurSolution />
+              </motion.div>
+            )}
+            {activeSection === "liveDemo" && (
+              <motion.div
+                key="liveDemo"
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -25 }}
+                transition={{ duration: 0.5 }}
+                className="w-full"
+              >
+                <LiveDemo />
+              </motion.div>
+            )}
+            {activeSection === "mapView" && (
+              <motion.div
+                key="mapView"
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -25 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white rounded-2xl shadow-xl p-4 md:p-6"
+              >
+                <MapViewSection />
+              </motion.div>
+            )}
+            {activeSection === "roadHealthScore" && (
+              <motion.div
+                key="roadHealthScore"
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -25 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white rounded-2xl shadow-xl p-4 md:p-6"
+              >
+                <RoadHealthScore />
+              </motion.div>
+            )}
+            {activeSection === "damageReport" && (
+              <motion.div
+                key="damageReport"
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -25 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white rounded-2xl shadow-xl p-4 md:p-6"
+              >
+                <DamageReport />
+              </motion.div>
+            )}
+            {activeSection === "predictiveAnalysis" && (
+              <motion.div
+                key="predictiveAnalysis"
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -25 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white rounded-2xl shadow-xl p-4 md:p-6"
+              >
+                <PredictiveAnalysis />
               </motion.div>
             )}
           </AnimatePresence>

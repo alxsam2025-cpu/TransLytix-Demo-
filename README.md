@@ -1,19 +1,18 @@
-# TransLytix — Road Health & Citizen Reports
+# TransLytix Ghana — Road Health & Citizen Reports
 
-A lightweight React + Vite dashboard with:
-- 📄 README explaining app, features, setup
-- 🖼 Screenshots for GitHub (`/screenshots`)
-- 🎨 Branding (logo + brand color)
-- 📊 Preloaded sample data for Ghana, Kenya, Zimbabwe
-- 🔔 Predictive maintenance alerts
-- 🛰 GPS coordinates per report (Leaflet map)
-- 🔁 Simulated live updates every few seconds
-- 📱 Fully mobile + web responsive layout (Tailwind)
-- 🌐 Local IP access for phone testing
-- 🚀 Deploy-ready for Netlify & Vercel
+A comprehensive React + Vite dashboard specifically designed for Ghana's road infrastructure monitoring:
+- 🇬🇭 **Ghana-focused**: All 10 regions with 275+ constituencies
+- 📊 **Live Demo**: Real-time dashboard with Ghana road reports
+- 🗺️ **Interactive Map**: Clickable regions and constituencies across Ghana
+- 📈 **Road Health Score**: Regional health analysis with real-time updates
+- 📋 **Damage Reports**: Searchable by constituency with CSV export
+- 🔮 **Predictive Analysis**: Health trends and maintenance alerts
+- 💰 **Cost Estimation**: Budget estimates in Ghana Cedis (GHS)
+- 📱 **Mobile Optimized**: Responsive design for mobile-first usage
+- 🚀 **Vercel Ready**: Optimized for cloud deployment
 
-## Tech
-React 18, Vite 5, TailwindCSS 3, Recharts 2, Leaflet 1 + React-Leaflet 4, Zustand
+## Tech Stack
+React 18 + TypeScript, Vite 7, TailwindCSS 3, Recharts 2, Leaflet + React-Leaflet, Zustand, Framer Motion
 
 ## Quickstart
 ```bash
@@ -42,18 +41,46 @@ npm run preview  # also LAN enabled
 2. Build Command: `npm run build`.
 3. Publish Directory: `dist`.
 
-## Features
-- **Road Reports** — photo, country, region, severity, status, timestamp.
-- **Road Health Index** per country (0–100). Higher is better.
-- **Predictive Alerts** — highlights regions trending with High/Critical issues in recent submissions.
-- **Map View** — shows recent reports with popups.
-- **Trends** — line chart of last 7 days by country.
-- **Live Updates** — a new synthetic report appears every few seconds to simulate field activity.
+## Core Features
 
-## Configuration
-- Brand colors live in `tailwind.config.js` (palette `brand`).
-- Live update interval is set in `src/App.tsx` (`setInterval(..., 4000)`).
-- Sample data generator in `src/data/sample.ts`.
+### Our Solution
+- Mission and vision for Ghana's road infrastructure
+- Comprehensive approach to citizen-driven reporting
+
+### Live Demo
+- Real-time Ghana road condition dashboard
+- Interactive charts showing report trends
+- Regional filtering and live report simulation
+
+### Map View
+- Interactive Ghana map with all 10 regions
+- Constituency-level detail and filtering
+- Report markers with severity indicators and cost estimates
+
+### Road Health Score
+- Real-time health scores for all Ghana regions
+- Bar chart visualization with trend analysis
+- Overall health metrics and critical issue tracking
+
+### Damage Report
+- Comprehensive report management with advanced filtering
+- Search by constituency across all Ghana regions
+- CSV export with cost estimates in Ghana Cedis
+- Status tracking (New, In Progress, Resolved)
+
+### Predictive Analysis
+- 14-day health trend analysis
+- Regional deterioration and improvement tracking
+- Latest reports feed from across Ghana
+- Maintenance alerts for critical areas
+
+## Ghana-Specific Configuration
+- **Regions & Constituencies**: Complete data in `src/data/sample.ts` with 275+ constituencies
+- **Cost Estimates**: Ghana Cedis currency with realistic repair cost estimates
+- **Geographic Coordinates**: Accurate lat/lng for all regions and constituencies
+- **Live Updates**: 4-second interval for simulated citizen reports
+- **Brand Colors**: Green/brown theme reflecting Ghana's identity
+- **Health Scoring**: Algorithm considers severity distribution across regions
 
 ## License
 MIT (sample project).
